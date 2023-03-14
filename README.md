@@ -2,4 +2,4 @@
 Kademlia Distributed Hash Table interaction app
 
 # Dependancy
-Depends on Boost, OpenSSL, libtorrent and hello_imgui (UI boilerplate)
+Depends on libtorrent and hello_imgui (UI boilerplate)

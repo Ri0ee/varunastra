@@ -10,9 +10,6 @@ set(i2p OFF)
 set(logging OFF)
 set(streaming OFF)
 
-set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "C:/boost_1_81_0")
-set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "C:/boost_1_81_0/stage/lib")
-
 include(FetchContent)
 FetchContent_Declare(
     hello_imgui
@@ -20,8 +17,8 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
-	libtorrent
-	GIT_REPOSITORY https://github.com/arvidn/libtorrent.git
+    libtorrent
+    GIT_REPOSITORY https://github.com/arvidn/libtorrent.git
     GIT_TAG 64817e0e8793d0875fc10245de52ffb2540a223d # 2.0.8
 )
 
