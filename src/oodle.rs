@@ -10,12 +10,14 @@ extern "C" {
         srclen: u64,
         dst: *mut u8,
     ) -> i64;
+    #[allow(unused)]
     fn oodle_decompress(src: *const u8, srclen: u64, dst: *mut u8, dstlen: u64) -> i64;
     fn oodle_get_compressed_buffer_size_needed(compressor: u8, srclen: u64) -> i64;
 }
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 #[repr(i32)]
+#[allow(unused)]
 pub enum Compressor {
     LZH,
     LZHLW,
@@ -33,8 +35,9 @@ pub enum Compressor {
     Leviathan,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 #[repr(u64)]
+#[allow(unused)]
 pub enum Level {
     None,
     SuperFast,
