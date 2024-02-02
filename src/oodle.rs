@@ -11,7 +11,6 @@ mod ffi_oodle {
             srclen: u64,
             dst: *mut u8,
         ) -> i64;
-        #[allow(unused)]
         pub(crate) fn oodle_decompress(
             src: *const u8,
             srclen: u64,
