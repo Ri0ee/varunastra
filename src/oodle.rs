@@ -1,18 +1,25 @@
 use std::{ffi::CString, sync::Once};
 
-#[link(name = "oodlerelay")]
-extern "C" {
-    fn oodlerelay_init(path: *const libc::c_char) -> i64;
-    fn oodle_compress(
-        compressor: i32,
-        level: u64,
-        src: *const u8,
-        srclen: u64,
-        dst: *mut u8,
-    ) -> i64;
-    #[allow(unused)]
-    fn oodle_decompress(src: *const u8, srclen: u64, dst: *mut u8, dstlen: u64) -> i64;
-    fn oodle_get_compressed_buffer_size_needed(compressor: u8, srclen: u64) -> i64;
+mod ffi_oodle {
+    #[link(name = "oodlerelay")]
+    extern "C" {
+        pub(crate) fn oodlerelay_init(path: *const libc::c_char) -> i64;
+        pub(crate) fn oodle_compress(
+            compressor: i32,
+            level: u64,
+            src: *const u8,
+            srclen: u64,
+            dst: *mut u8,
+        ) -> i64;
+        #[allow(unused)]
+        pub(crate) fn oodle_decompress(
+            src: *const u8,
+            srclen: u64,
+            dst: *mut u8,
+            dstlen: u64,
+        ) -> i64;
+        pub(crate) fn oodle_get_compressed_buffer_size_needed(compressor: u8, srclen: u64) -> i64;
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -65,7 +72,7 @@ impl Oodle {
         C_OODLE_INITIALIZED.call_once(|| {
             let relay_init_status = unsafe {
                 let oodle_path = CString::new(path).unwrap();
-                oodlerelay_init(oodle_path.as_ptr())
+                ffi_oodle::oodlerelay_init(oodle_path.as_ptr())
             };
 
             if relay_init_status < 0 {
@@ -82,13 +89,13 @@ impl Oodle {
     pub fn compress(&self, src: &[u8], compressor: Compressor, level: Level) -> Vec<u8> {
         let mut dst = vec![];
 
-        let required_len =
-            unsafe { oodle_get_compressed_buffer_size_needed(compressor as u8, src.len() as u64) }
-                as usize;
+        let required_len = unsafe {
+            ffi_oodle::oodle_get_compressed_buffer_size_needed(compressor as u8, src.len() as u64)
+        } as usize;
         dst.resize(required_len, 0);
 
         let len = unsafe {
-            oodle_compress(
+            ffi_oodle::oodle_compress(
                 compressor as i32,
                 level as u64,
                 src.as_ptr(),
@@ -106,7 +113,7 @@ impl Oodle {
         let mut dst = vec![];
 
         let len = unsafe {
-            oodle_decompress(
+            ffi_oodle::oodle_decompress(
                 src.as_ptr(),
                 src.len() as u64,
                 dst.as_mut_ptr(),
