@@ -1,4 +1,4 @@
-use std::ffi::CString;
+use std::{error::Error, ffi::CString, fmt::Display};
 
 #[link(name = "oodlerelay")]
 extern "C" {
@@ -53,6 +53,29 @@ pub enum Level {
     Optimal7,
     Optimal8,
     Optimal9,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum OodleErr {
+    UnInitialized(i64),
+    UnpackedSizeMismatch { src: usize, dst: usize },
+}
+
+impl Error for OodleErr {}
+
+impl Display for OodleErr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            OodleErr::UnInitialized(code) => {
+                write!(f, "Oodle was not initialized. Error code: {}", code)
+            }
+            OodleErr::UnpackedSizeMismatch { src, dst } => write!(
+                f,
+                "A size mismatch was found while unpacking: src {}, dst {}",
+                src, dst
+            ),
+        }
+    }
 }
 
 pub struct Oodle {
