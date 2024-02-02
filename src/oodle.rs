@@ -69,7 +69,9 @@ impl Oodle {
         }
     }
 
-    pub fn compress(&self, src: &Vec<u8>, dst: &mut Vec<u8>, compressor: Compressor, level: Level) {
+    pub fn compress(&self, src: &[u8], compressor: Compressor, level: Level) -> Vec<u8> {
+        let mut dst = vec![];
+
         if self.relay_init_status < 0 {
             panic!("Oodle not initialized");
         }
@@ -89,9 +91,14 @@ impl Oodle {
             )
         } as usize;
         dst.resize(len, 0);
+
+        dst
     }
 
-    pub fn decompress(&self, src: &Vec<u8>, dst: &mut Vec<u8>) {
+    #[allow(unused)]
+    pub fn decompress(&self, src: &[u8]) -> Vec<u8> {
+        let mut dst = vec![];
+
         if self.relay_init_status < 0 {
             panic!("Oodle not initialized");
         }
@@ -104,8 +111,11 @@ impl Oodle {
                 dst.len() as u64,
             )
         } as usize;
+
         if len != dst.len() {
             panic!("Unpacked size mismatch");
         }
+
+        dst
     }
 }
