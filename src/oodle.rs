@@ -60,6 +60,7 @@ pub struct Oodle {
 }
 
 impl Oodle {
+    // TODO: make the path recognizable as an environment variable
     pub fn new(path: &str) -> Self {
         Self {
             relay_init_status: unsafe {
@@ -117,5 +118,36 @@ impl Oodle {
         }
 
         dst
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Oodle;
+
+    #[test]
+    fn test_normal_kraken_compression() {
+        let input: Vec<u8> = vec![1; 10];
+
+        let oodle = Oodle::new("resources/oo2core_8_win64.dll");
+
+        let actual = oodle.compress(&input, super::Compressor::Kraken, super::Level::Normal);
+
+        let expected = vec![204, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn test_decompression() {
+        let input: Vec<u8> = vec![204, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+
+        let oodle = Oodle::new("resources/oo2core_8_win64.dll");
+
+        let actual = oodle.decompress(&input);
+
+        let expected = vec![1; 10];
+
+        assert_eq!(actual, expected);
     }
 }
