@@ -55,29 +55,6 @@ pub enum Level {
     Optimal9,
 }
 
-#[derive(Debug, Clone, Copy)]
-pub enum OodleErr {
-    UnInitialized(i64),
-    UnpackedSizeMismatch { src: usize, dst: usize },
-}
-
-impl Error for OodleErr {}
-
-impl Display for OodleErr {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            OodleErr::UnInitialized(code) => {
-                write!(f, "Oodle was not initialized. Error code: {}", code)
-            }
-            OodleErr::UnpackedSizeMismatch { src, dst } => write!(
-                f,
-                "A size mismatch was found while unpacking: src {}, dst {}",
-                src, dst
-            ),
-        }
-    }
-}
-
 pub struct Oodle {
     relay_init_status: i64,
 }
@@ -120,7 +97,7 @@ impl Oodle {
     }
 
     #[allow(unused)]
-    pub fn decompress(&self, src: &[u8]) -> Vec<u8> {
+    pub fn decompress(&self, src: &[u8]) -> Option<Vec<u8>> {
         let mut dst = vec![];
 
         if self.relay_init_status < 0 {
@@ -137,10 +114,10 @@ impl Oodle {
         } as usize;
 
         if len != dst.len() {
-            panic!("Unpacked size mismatch");
+            return None;
         }
 
-        dst
+        Some(dst)
     }
 }
 
@@ -171,6 +148,7 @@ mod tests {
 
         let expected = vec![1; 10];
 
-        assert_eq!(actual, expected);
+        assert!(actual.is_some());
+        assert_eq!(actual.unwrap(), expected);
     }
 }
