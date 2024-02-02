@@ -1,4 +1,4 @@
-use std::{error::Error, ffi::CString, fmt::Display};
+use std::{ffi::CString, sync::Once};
 
 #[link(name = "oodlerelay")]
 extern "C" {
@@ -55,27 +55,32 @@ pub enum Level {
     Optimal9,
 }
 
-pub struct Oodle {
-    relay_init_status: i64,
-}
+static C_OODLE_INITIALIZED: Once = Once::new();
+
+pub struct Oodle(());
 
 impl Oodle {
     // TODO: make the path recognizable as an environment variable
     pub fn new(path: &str) -> Self {
-        Self {
-            relay_init_status: unsafe {
+        C_OODLE_INITIALIZED.call_once(|| {
+            let relay_init_status = unsafe {
                 let oodle_path = CString::new(path).unwrap();
                 oodlerelay_init(oodle_path.as_ptr())
-            },
-        }
+            };
+
+            if relay_init_status < 0 {
+                panic!(
+                    "Oodle was not initialized! Error code: {}",
+                    relay_init_status
+                );
+            }
+        });
+
+        Self(())
     }
 
     pub fn compress(&self, src: &[u8], compressor: Compressor, level: Level) -> Vec<u8> {
         let mut dst = vec![];
-
-        if self.relay_init_status < 0 {
-            panic!("Oodle not initialized");
-        }
 
         let required_len =
             unsafe { oodle_get_compressed_buffer_size_needed(compressor as u8, src.len() as u64) }
@@ -99,10 +104,6 @@ impl Oodle {
     #[allow(unused)]
     pub fn decompress(&self, src: &[u8]) -> Option<Vec<u8>> {
         let mut dst = vec![];
-
-        if self.relay_init_status < 0 {
-            panic!("Oodle not initialized");
-        }
 
         let len = unsafe {
             oodle_decompress(
