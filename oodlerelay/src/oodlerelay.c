@@ -1,6 +1,5 @@
 #include <windows.h>
 #include <stdint.h>
-#include <stdio.h>
 
 typedef int64_t (__cdecl *compress_decl)(int32_t, uint8_t*, uint64_t, uint8_t*, uint64_t, uint32_t*, uint8_t*, uint64_t*, uint64_t, uint64_t);
 compress_decl compress_proc = 0;
