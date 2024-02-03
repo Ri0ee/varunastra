@@ -67,10 +67,10 @@ pub struct Oodle(());
 
 impl Oodle {
     // TODO: make the path recognizable as an environment variable
-    pub fn new(path: &str) -> Self {
+    pub fn new(path: &std::path::Path) -> Self {
         C_OODLE_INITIALIZED.call_once(|| {
             let relay_init_status = unsafe {
-                let oodle_path = CString::new(path).unwrap();
+                let oodle_path = CString::new(path.to_str().unwrap()).unwrap();
                 ffi_oodle::oodlerelay_init(oodle_path.as_ptr())
             };
 
@@ -136,7 +136,7 @@ mod tests {
     fn test_normal_kraken_compression() {
         let input: Vec<u8> = vec![1; 10];
 
-        let oodle = Oodle::new("resources/oo2core_8_win64.dll");
+        let oodle = Oodle::new(std::path::Path::new("resources/oo2core_8_win64.dll"));
 
         let actual = oodle.compress(&input, super::Compressor::Kraken, super::Level::Normal);
 
@@ -149,7 +149,7 @@ mod tests {
     fn test_decompression() {
         let input: Vec<u8> = vec![204, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 
-        let oodle = Oodle::new("resources/oo2core_8_win64.dll");
+        let oodle = Oodle::new(std::path::Path::new("resources/oo2core_8_win64.dll"));
 
         let actual = oodle.decompress(&input, 10);
 
