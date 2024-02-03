@@ -108,8 +108,8 @@ impl Oodle {
     }
 
     #[allow(unused)]
-    pub fn decompress(&self, src: &[u8]) -> Option<Vec<u8>> {
-        let mut dst = vec![];
+    pub fn decompress(&self, src: &[u8], dstlen: usize) -> Option<Vec<u8>> {
+        let mut dst = vec![0; dstlen];
 
         let len = unsafe {
             ffi_oodle::oodle_decompress(
@@ -120,7 +120,7 @@ impl Oodle {
             )
         } as usize;
 
-        if len != dst.len() {
+        if len != dstlen {
             return None;
         }
 
@@ -151,7 +151,7 @@ mod tests {
 
         let oodle = Oodle::new("resources/oo2core_8_win64.dll");
 
-        let actual = oodle.decompress(&input);
+        let actual = oodle.decompress(&input, 10);
 
         let expected = vec![1; 10];
 
