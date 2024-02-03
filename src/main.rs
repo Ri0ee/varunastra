@@ -1,13 +1,12 @@
-use std::vec;
+use crate::oodle::Oodle;
 
 mod oodle;
 
 fn main() {
-  let oodle = oodle::Oodle::new("resources/oo2core_8_win64.dll");
-  let data = std::fs::read("./lenna.bmp").unwrap();
+    let oodle = Oodle::new("resources/oo2core_8_win64.dll");
+    let data = (0..100).collect::<Vec<_>>();
 
-  let mut dst = vec![];
-  oodle.compress(&data, &mut dst, oodle::Compressor::Kraken, oodle::Level::Normal);
+    let dst = oodle.compress(&data, oodle::Compressor::Kraken, oodle::Level::Normal);
 
-  println!("src_len {} dst_len {}", data.len(), dst.len());
+    println!("src_len {} dst_len {}", data.len(), dst.len());
 }
