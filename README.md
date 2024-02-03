@@ -1,4 +1,4 @@
-# Varun Astra
+# Varunastra
 
 To build and run this project, you should have a copy of `oo2core_8_win64.dll`. Place it inside the `resources` folder.
 
