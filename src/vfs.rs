@@ -23,7 +23,7 @@ impl Bundle {
     let block_count = u32::from_le_bytes(raw_data[0x24..0x28].try_into().expect("data corrupted"));
     let uncompressed_block_granularity = 0; // unknown
     let block_sizes = (0..block_count).map(|b| {
-      u32::from_le_bytes(raw_data[(60 + b as usize * 4)..(64 + b as usize * 4)].try_into().expect("data corrputed"))
+      u32::from_le_bytes(raw_data[(0x28 + b as usize * 4)..(0x2C + b as usize * 4)].try_into().expect("data corrputed"))
     }).collect();
 
     let header = BundleHeader {
@@ -34,7 +34,7 @@ impl Bundle {
       block_sizes
     };
 
-    let mut block_offset = 0x1AC;
+    let mut block_offset = 0x3C + block_count as usize * 4;
     let blocks = header.block_sizes.iter().map(|size| {
       let raw_block = raw_data[(block_offset)..(block_offset + *size as usize)].try_into().expect("data corrupted");
       block_offset += *size as usize;
