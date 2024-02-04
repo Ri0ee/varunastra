@@ -1,6 +1,7 @@
 use crate::oodle::Oodle;
 
 mod oodle;
+mod vfs;
 
 fn main() {
     let oodle = Oodle::new(std::path::Path::new("resources/oo2core_8_win64.dll"));
